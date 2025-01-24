@@ -30,6 +30,24 @@
             <div id="gallery-body"></div>
         </div>
     </div>
+    <div id="exit-modal" class="exit-modal"
+        style="position: absolute;left: 0;right: 0;top: 0;bottom: 0;z-index: 202;display: none;background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-content" style="
+            width: 400px;
+            background-color: #fff;
+            margin: 10px auto;
+            border-radius: 15px;
+            padding: 10px 15px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);">
+            <h3 style="margin: 0 0 10px 0;">Are you sure you want to exit?</h3>
+            <p>Game will close in <span id="countdown">10</span> seconds...</p>
+            <button id="cancel-btn" class="btn btn-secondary">Cancel</button>
+            <button id="force-close-btn" class="btn btn-danger">Close Anyway</button>
+        </div>
+    </div>
     <div id="overlays" style="display: none;">
         <div id="helloDialog">
             <div class="form-group">
@@ -47,6 +65,7 @@
 
             <button id="play-btn" class="btn btn-play btn-primary btn-needs-server">Play</button>
             <button id="spectate-btn" onclick="spectate()" class="btn btn-warning btn-spectate btn-needs-server glyphicon glyphicon-eye-open"></button>
+            <button id="exit-btn" class="btn btn-danger btn-needs-server" style="width: 100%; margin-bottom: 10px; display: none;">Exit Game</button>
             <button id="gallery-btn" onclick="openSkinsList()" class="btn btn-play btn-primary btn-needs-server btn-info">Skins Gallery</button>
 
             <div id="settings" class="checkbox">

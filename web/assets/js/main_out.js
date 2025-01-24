@@ -1638,12 +1638,56 @@
         soundsVolume = byId('soundsVolume');
         mainCanvas.focus();
 
+        function showExitModal() {
+            const modal = byId('exit-modal');
+            const countdownEl = byId('countdown');
+            let timer = 10;
+
+            modal.style.display = 'flex';
+            countdownEl.textContent = timer;
+
+            const interval = setInterval(() => {
+                timer--;
+                countdownEl.textContent = timer;
+                if (timer === 0) {
+                    clearInterval(interval);
+                    closeGame();
+                }
+            }, 1000);
+
+            byId('cancel-btn').addEventListener('click', () => {
+                clearInterval(interval);
+                modal.style.display = 'none';
+                byId('exit-btn').style.display = 'block';
+            });
+
+            byId('force-close-btn').addEventListener('click', () => {
+                clearInterval(interval);
+                closeGame();
+            });
+        }
+
+        function closeGame() {
+            byId('exit-modal').style.display = 'none';
+            if (ws) {
+                ws.close();
+            }
+            showESCOverlay()
+        }
+
         loadSettings();
         window.addEventListener('beforeunload', storeSettings);
         document.addEventListener('wheel', handleScroll, {passive: true});
         byId('play-btn').addEventListener('click', () => {
             const skin = settings.skin;
             sendPlay((skin ? `<${skin}>` : '') + settings.nick);
+            hideESCOverlay();
+
+            byId('exit-btn').style.display = 'block';
+        });
+        byId('exit-btn').addEventListener('click', () => {
+            showExitModal();
+            byId('exit-btn').style.display = 'none';
             hideESCOverlay();
         });
         window.onkeydown = keydown;
