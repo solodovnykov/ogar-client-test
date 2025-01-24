@@ -1233,6 +1233,10 @@
             this.born = syncUpdStamp;
             this.points = [];
             this.pointsVel = [];
+            this.eyeOffset = s / 3; // Distance between the center and the eyes
+            this.eyeAngle = 0; // Eye direction angle
+            this.eyeX = this.x; // Initial eye coordinates
+            this.eyeY = this.y;
         }
         destroy(killerId) {
             cells.byId.delete(this.id);
@@ -1259,6 +1263,18 @@
             this.s = this.os + (this.ns - this.os) * dt;
             this.nameSize = ~~(~~(Math.max(~~(0.3 * this.ns), 24)) / 3) * 3;
             this.drawNameSize = ~~(~~(Math.max(~~(0.3 * this.s), 24)) / 3) * 3;
+
+            // Dynamic eyeOffset
+            this.eyeOffset = this.s / 3;
+
+            // Angle of the player's movement
+            const dx = this.nx - this.x; // Difference in X
+            const dy = this.ny - this.y; // Difference in Y
+            this.eyeAngle = Math.atan2(dy, dx); // Calculating an angle relative to a direction
+
+            // Eyes position
+            this.eyeX = this.x + Math.cos(this.eyeAngle) * this.eyeOffset;
+            this.eyeY = this.y + Math.sin(this.eyeAngle) * this.eyeOffset;
 
             if (settings.jellyPhysics && this.points.length) {
                 const ratio = this.s / prevFrameSize;
@@ -1364,8 +1380,44 @@
         draw(ctx) {
             ctx.save();
             this.drawShape(ctx);
+            this.drawEyes(ctx);
             this.drawText(ctx);
             ctx.restore();
+        }
+        drawEyes(ctx) {
+            if (cells.mine.indexOf(this.id) == -1) return;
+
+            const eyeRadius = Math.max(4, this.s / 10);
+            const eyeOffsetX = this.s / 6;
+            const pupilRadius = eyeRadius / 2;
+
+            // Left eye
+            ctx.beginPath();
+            ctx.arc(this.eyeX - eyeOffsetX, this.eyeY, eyeRadius, 0, 2 * Math.PI);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fill();
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Right eye
+            ctx.beginPath();
+            ctx.arc(this.eyeX + eyeOffsetX, this.eyeY, eyeRadius, 0, 2 * Math.PI);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fill();
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(this.eyeX - eyeOffsetX, this.eyeY, pupilRadius, 0, 2 * Math.PI);
+            ctx.fillStyle = '#000000';
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(this.eyeX + eyeOffsetX, this.eyeY, pupilRadius, 0, 2 * Math.PI);
+            ctx.fillStyle = '#000000';
+            ctx.fill();
         }
         drawShape(ctx) {
             ctx.fillStyle = settings.showColor ? this.color.toHex() : '#FFFFFF';
