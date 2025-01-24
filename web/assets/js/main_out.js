@@ -1371,6 +1371,15 @@
             skin.src = `${SKIN_URL}${this.skin}.png`;
             loadedSkins.set(this.skin, skin);
         }
+        setSuperFoodSkin() {
+            if (!loadedSkins.has('SuperFoodSkin')) {
+                const skin = new Image();
+                skin.src = `${SKIN_URL}cat.png`;
+                skin.onload = () => {
+                    loadedSkins.set('SuperFoodSkin', skin);
+                };
+            }
+        }
         setColor(value) {
             if (!value) {
                 Logger.warn('Got no color');
@@ -1428,7 +1437,7 @@
             if (this.s > 20) {
                 this.s -= ctx.lineWidth / 2;
             }
-
+        
             ctx.beginPath();
             if (this.jagged) ctx.lineJoin = 'miter';
             if (settings.jellyPhysics && this.points.length) {
@@ -1452,25 +1461,44 @@
                 ctx.arc(this.x, this.y, this.s, 0, PI_2, false);
             }
             ctx.closePath();
-
+        
             if (this.destroyed) {
                 ctx.globalAlpha = Math.max(120 - Date.now() + this.dead, 0) / 120;
             } else {
                 ctx.globalAlpha = Math.min(Date.now() - this.born, 120) / 120;
             }
-
-            const skinImage = loadedSkins.get(this.skin);
-            if (settings.showSkins && this.skin && skinImage &&
-                skinImage.complete && skinImage.width && skinImage.height) {
-                if (settings.fillSkin) ctx.fill();
-                ctx.save(); // for the clip
-                ctx.clip();
-                ctx.drawImage(skinImage, this.x - this.s, this.y - this.s,
-                    this.s * 2, this.s * 2);
-                ctx.restore();
+        
+            if (this.superFood) {
+                this.setSuperFoodSkin();
+                const skinImage = loadedSkins.get('SuperFoodSkin');
+                if (skinImage && skinImage.complete && skinImage.width && skinImage.height) {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.s, 0, Math.PI * 2, false);
+                    ctx.closePath();
+                    ctx.clip();
+                    ctx.drawImage(skinImage, this.x - this.s, this.y - this.s, this.s * 2, this.s * 2);
+            
+                    ctx.restore();
+                } else {
+                    ctx.fill();
+                }
             } else {
-                ctx.fill();
+                const skinImage = loadedSkins.get(this.skin);
+                if (skinImage && skinImage.complete && skinImage.width && skinImage.height) {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.s, 0, Math.PI * 2, false);
+                    ctx.closePath();
+                    ctx.clip();
+                    ctx.drawImage(skinImage, this.x - this.s, this.y - this.s, this.s * 2, this.s * 2);
+            
+                    ctx.restore();
+                } else {
+                    ctx.fill();
+                }
             }
+        
             if (this.s > 20) {
                 ctx.stroke();
                 this.s += ctx.lineWidth / 2;
