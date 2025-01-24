@@ -347,6 +347,7 @@
                         updName: !!(flagMask & 0x08),
                         jagged: !!(flagMask & 0x01) || !!(flagMask & 0x10),
                         ejected: !!(flagMask & 0x20),
+                        superFood: !!(flagMask & 0x40),
                     };
 
                     const color = flags.updColor ? new Color(reader.getUint8(), reader.getUint8(), reader.getUint8()) : null;
@@ -1230,6 +1231,7 @@
             this.setSkin(skin);
             this.jagged = flags.jagged;
             this.ejected = flags.ejected;
+            this.superFood = flags.superFood;
             this.born = syncUpdStamp;
             this.points = [];
             this.pointsVel = [];
